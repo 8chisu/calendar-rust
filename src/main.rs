@@ -1,34 +1,33 @@
 use std::convert::From;
 
 trait Calendarize {}
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CalendarDate {
     year: CalendarYear,
     month: CalendarMonth,
     day: CalendarDay,
 }
 
-impl CalendarDate {}
-/// CalendarYear型は数字で年を表すもの
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct CalendarYear(u16);
+#[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct CalendarYear(u16);
 
 /// CalendarMonth型は英語での月の名前ではなく、数字で月を表すもの
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct CalendarMonth {
+#[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct CalendarMonth {
     num: u8,
     name: MonthName,
 }
 
 /// CalendarDay型は曜日ではなく、数字の日付を表すもの
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct CalendarDay {
+#[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct CalendarDay {
     num: u16,
     name: WeekDayName,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum MonthName {
+    #[default]
     January,
     February,
     March,
@@ -43,7 +42,7 @@ pub enum MonthName {
     December,
 }
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum WeekDayName {
     Sunday,
     Monday,
@@ -51,9 +50,35 @@ pub enum WeekDayName {
     Wednesday,
     Thursday,
     Friday,
+    #[default]
     Saturday,
 }
 
+
+impl CalendarDate {
+    pub fn new() -> Self {
+        CalendarDate {
+            year: CalendarYear::default(),
+            month: CalendarMonth::default(),
+            day: CalendarDay::default(),
+        }
+    }
+    
+    pub fn year(&mut self, year: CalendarYear) -> &mut Self {
+        self.year = year;
+        self
+    }
+    
+    pub fn month(&mut self, month: CalendarMonth) -> &mut Self {
+        self.month = month;
+        self
+    }
+    
+    pub fn day(&mut self, day: CalendarDay) -> &mut Self {
+        self.day = day;
+        self
+    }
+}
 impl From<CalendarMonth> for u8 {
     fn from(month: CalendarMonth) -> Self {
         month.num
@@ -63,15 +88,6 @@ impl From<CalendarMonth> for u8 {
 impl From<CalendarMonth> for MonthName {
     fn from(month: CalendarMonth) -> Self {
         month.name
-    }
-}
-
-impl CalendarMonth {
-    fn new(month_name: MonthName) -> Self {
-        CalendarMonth {
-            num: u8::from(month_name),
-            name: month_name,
-        }
     }
 }
 
@@ -94,7 +110,18 @@ impl From<MonthName> for u8 {
     }
 }
 
-fn main() {}
+fn main() {
+    let mut calender= CalendarDate::new();
+    let year = CalendarYear(2002);
+    let month = CalendarMonth{num: 8, name: MonthName::October};
+    let day = CalendarDay{num: 10, name: WeekDayName::Sunday};
+    
+    let date = calender
+        .year(year)
+        .month(month)
+        .day(day);
+    println!("{:?}", date);
+}
 
 /// printのために'''cargo test -- --nocapture'''でテストを開始してください。
 #[cfg(test)]
@@ -111,8 +138,6 @@ mod tests {
         let month_num: u8 = month_name.into();
         assert_eq!(month_num, 1);
 
-        let month: CalendarMonth = CalendarMonth::new(MonthName::April);
-        let month_name: MonthName = month.into();
         assert_eq!(month_name, MonthName::April);
 
         let month_num: u8 = month_name.into();
